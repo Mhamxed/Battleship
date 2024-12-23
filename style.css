@@ -112,6 +112,12 @@ button {
     gap: 1rem;
 }
 
+.ship {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
 .ships {
     display: flex;
     flex-direction: column;
@@ -120,8 +126,6 @@ button {
 
 .aircraft, .battleship, .submarine, .destroyer, .patrol-boat {
     display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
 }
 
 .aircraft-sqrs, .battleship-sqrs, .submarine-sqrs, .destroyer-sqrs, .patrol-boat-sqrs {
@@ -130,4 +134,12 @@ button {
 
 .card {
     background-color: #e5e7eb;
+}
+
+.highlight {
+    background-color: aqua;
+}
+
+.air {
+    display: flex;
 }

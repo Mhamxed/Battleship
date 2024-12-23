@@ -1,1 +1,1 @@
-# Battleship
+The goal for this project is to create a web version of the popular game battleship.

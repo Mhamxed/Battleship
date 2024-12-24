@@ -3,6 +3,9 @@
     overflow-x: hidden;
     --shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
     --bg: #dbeafe;
+    --ship: #475569;
+    --hit: #fca5a5;
+    --missedAttack: #bbf7d0;
 }
 
 * {
@@ -47,7 +50,7 @@ i {
     align-items: center;
 }
 
-.player-card, .computer-card, .modal-card, .card {
+.player-card, .computer-card, .modal-card, .ship-card {
     height: 2.5rem;
     width: 2.5rem;
     background-color: inherit;
@@ -80,6 +83,7 @@ i {
     box-shadow: var(--shadow);
     border-radius: 5px;
     gap: 1rem;
+    scale: 1;
 
     position: fixed;
     top: 50%;
@@ -132,14 +136,18 @@ button {
     display: flex;
 }
 
-.card {
-    background-color: #e5e7eb;
+.ship-card {
+    background-color: var(--ship);
+}
+
+.hit {
+    background-color: var(--hit);
+}
+
+.missed-Attack {
+    background-color: var(--missedAttack);
 }
 
 .highlight {
     background-color: aqua;
-}
-
-.air {
-    display: flex;
 }

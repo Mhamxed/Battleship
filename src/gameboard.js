@@ -6,32 +6,26 @@ class Gameboard {
     }
 
     createGameBoard() {
-        for (let i = 0; i < 10; i++) {
-            const row = this.board[i]
-            row = []
-            for (let j = 0; j < 10; j++) {
-                const cell = {shipName: null, hit: false, missedAttack: false}
-                this.board[i][j] = cell
-                row.push(cell)
-            }
-            this.board.push(row)
+        for (let i = 0; i < 100; i++) {
+            const cell = {shipName: null, hit: false, missedAttack: false}
+            this.board[i] = cell
         }
         return this.board
-    }
+        }
 
-    placeShip(ship, x, y) {
+    placeShip(ship, x) {
         const len = ship.length
         const name = ship.name 
         const gameBoard = this.board
-        for (let i = x; i <= len; i++) {
-            const cell = gameBoard[x][y]
+        for (let i = x; i < x + len; i++) {
+            const cell = gameBoard[i]
             cell.shipName = name
         }
         return gameBoard
     }
 
-    receiveAttack(x, y) {
-        const attackedCell = this.board[x][y]
+    receiveAttack(x) {
+        const attackedCell = this.board[x]
         if (attackedCell.shipName && attackedCell.missedAttack === false) {
             attackedCell.hit = true
             attackedCell.shipName.hit()
@@ -42,12 +36,10 @@ class Gameboard {
 
     areAllShipsSunk() {
         let sunk = true
-        for (let i = 0; i < 10; i++) {
-            for (let j = 0; j < 10; j++) {
-                const cell = this.board[i][j]
-                if (cell.shipName && cell.hit === false) {
-                    sunk = false
-                }
+        for (let i = 0; i < 100; i++) {
+            const cell = this.board[i]
+            if (cell.shipName && cell.hit === false) {
+                sunk = false
             }
         }
         return sunk

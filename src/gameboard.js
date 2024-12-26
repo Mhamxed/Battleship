@@ -1,5 +1,6 @@
 class Gameboard {
-    constructor() {
+    constructor(ships) {
+        this.ships = ships
         this.board = []
     }
 
@@ -22,15 +23,18 @@ class Gameboard {
         return gameBoard
     }
 
-    receiveAttack(ships, x) {
+    receiveAttack(x) {
         const attackedCell = this.board[x]
         if (attackedCell.shipId !== null && attackedCell.missedAttack === false) {
             attackedCell.hit = true
-            const ship = ships[attackedCell.shipId]
+            const ship = this.ships[attackedCell.shipId]
             ship.hit()
         } else if (attackedCell.shipId === null && attackedCell.missedAttack === false) {
             attackedCell.missedAttack = true
         }
+    } 
+    areAllSunk() {
+        return this.ships.every(ship => ship.isSunk())
     }
 }
 

@@ -21,14 +21,17 @@ let shipsComp = [aircraftComp, battleshipComp, submarineComp, destroyerComp, cru
 let ships = [aircraft, battleship, submarine, destroyer, cruiser]
 
 //create the player board and the computer board objects
-let PlayerBoard = new Gameboard()
+let PlayerBoard = new Gameboard(ships)
 PlayerBoard.createGameBoard()
-let ComputerBoard = new Gameboard()
+let ComputerBoard = new Gameboard(shipsComp)
 ComputerBoard.createGameBoard()
 
 //create the player and the computer player objects
 let player = new Player(PlayerBoard)
 let computer = new Player(ComputerBoard)
+
+const header = document.querySelector('.header')
+const main = document.querySelector('.main')
 
 const playerBoard = document.querySelector('.player-board ')
 const computerBoard = document.querySelector('.computer-board')
@@ -80,13 +83,19 @@ function displayPlayerBoard() {
     }
 }
 
-displayComputerBoard()
-displayPlayerBoard()
+function initGame() {
+    displayComputerBoard()
+    displayPlayerBoard()
+    header.classList.add('blur')
+    main.classList.add('blur')
+}
+
+initGame()
 
 function isValidShipPlace(board, ship, startIndex) {
     let valid = true
     const upperBound = startIndex + ship.length * 1
-    for (let i = startIndex; i <= upperBound; i++) {
+    for (let i = startIndex; i < upperBound; i++) {
         if (i % 10 - 1  !== (i - 1) % 10) {
             valid = false
         }
@@ -100,7 +109,12 @@ function isValidShipPlace(board, ship, startIndex) {
 function domShipCells(ship, x, squares) {
     const len = ship.length
     for (let i = x; i < x + len; i++) {
-        squares[i].classList.add('ship-card')
+        if (squares == computerSquares) {
+            squares[i].classList.add('ship-card')
+            squares[i].classList.add('hide')
+        } else {
+            squares[i].classList.add('ship-card')
+        }
     }
 }
 
@@ -174,61 +188,88 @@ function dropShip(e) {
 //start the game
 const startButton = document.querySelector('#start')
 const modal = document.querySelector('.modal')
-
 startButton.addEventListener('click', startGame)
 
-function allSunk(ships) {
-    let res = true
-    ships.forEach(ship => {
-        console.log(ship.hitTimes, ship.length)
-        if (ship.hitTimes < ship.length){
-            res = false
-        }
-    })
-    return res
+//get a random square for computer player to click on
+function shuffleSquares(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
 }
 
 function isGameOver() {
-    let gameOver = {isGameOver: false, winner: null}
-    if  (allSunk(ships) === true) {
-        gameOver.isGameOver = true
-        gameOver.winner = 'Player' 
-    } else if (allSunk(shipsComp) === true) {
-        gameOver.isGameOver = true
-        gameOver.winner = 'Computer' 
+    let gameOver = {done: false, winner: null}
+    if (ComputerBoard.areAllSunk()) {
+        gameOver.done = true
+        gameOver.winner = 'Player'
+    } else if (PlayerBoard.areAllSunk()) {
+        gameOver.done = true
+        gameOver.winner = 'Computer'
     }
     return gameOver
+}
+
+function displayAttack(board, square) {
+    const index = square.id
+    board.receiveAttack(index)
+    const attackedCell = board.board[index]
+    if (attackedCell.hit === true) {
+        square.classList.add('hit')
+    } else if (attackedCell.missedAttack === true) {
+        square.classList.add('missed-Attack')
+    } else {
+        return
+    } 
 }
 
 function startGame() {
     if (shipsDom.length !== 0) return
     shipsComp.forEach(ship => placeComputerShip(ship))
+    header.classList.remove('blur')
+    main.classList.remove('blur')
     modal.classList.add('modal-hide')
     gameControler()
 }
 
-//play the game until either player loses
-function gameControler() {
-    let gameOver = isGameOver()
-    if (!gameOver.isGameOver) {
-        computerSquares.forEach(square => {
-            square.addEventListener('click', () => {
-                const index = square.id
-                ComputerBoard.receiveAttack(shipsComp, index)
-                const attackedCell = ComputerBoard.board[index]
-                if (attackedCell.hit === true) {
-                    square.classList.add('hit')
-                } else if (attackedCell.missedAttack === true) {
-                    square.classList.add('missed-Attack')
-                } else {
-                    return
-                }
-            })
-        })
-    } else {
-        console.log(gameOver.winner)
-    }
+function displayWinner() {
+    const startOverBtn = document.querySelector('#start-over')
+    const winner = document.querySelector('.winner')
+    const startOver = document.querySelector('.start-over')
+    startOver.classList.add('scale')
+    header.classList.add('blur')
+    main.classList.add('blur')
+    winner.textContent = `${isGameOver().winner} Wins!`
+    startOverBtn.addEventListener('click', () => {
+        window.location.reload();
+    })
 }
 
-
-export default ships;
+//play the game until either player loses
+function gameControler() {
+    const playerSquaresArray = shuffleSquares([...playerSquares])
+    computerSquares.forEach(square => {
+        square.addEventListener('click', () => {
+            if (!isGameOver().done) {
+                displayAttack(ComputerBoard, square)
+                if (isGameOver().done) {
+                    displayWinner()
+                } else {
+                    const randomSquare = playerSquaresArray.shift()
+                    randomSquare.click()
+                }
+            } else return
+        })
+    })
+    playerSquares.forEach(square => {
+        square.addEventListener('click', () => {
+            if (!isGameOver().done) {
+                displayAttack(PlayerBoard, square)
+                if (isGameOver().done) {
+                    displayWinner()
+                }
+            } else return
+        })
+    })
+}

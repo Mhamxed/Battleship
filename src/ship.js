@@ -8,6 +8,12 @@ class Ship {
     hit() {
         this.hitTimes++
     }
+
+    isSunk() {
+        if (this.hitTimes >= this.length) {
+            return true
+        } else return false
+    }
 }
 
 export default Ship;

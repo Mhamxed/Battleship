@@ -24,14 +24,18 @@ class Gameboard {
     }
 
     receiveAttack(x) {
+        let successAttack = false
         const attackedCell = this.board[x]
-        if (attackedCell.shipId !== null && attackedCell.missedAttack === false) {
+        if (attackedCell.shipId !== null && attackedCell.missedAttack === false && attackedCell.hit === false) {
             attackedCell.hit = true
             const ship = this.ships[attackedCell.shipId]
             ship.hit()
-        } else if (attackedCell.shipId === null && attackedCell.missedAttack === false) {
+            successAttack = true
+        } else if (attackedCell.shipId === null && attackedCell.missedAttack === false && attackedCell.hit === false) {
             attackedCell.missedAttack = true
+            successAttack = true
         }
+        return successAttack
     } 
     areAllSunk() {
         return this.ships.every(ship => ship.isSunk())

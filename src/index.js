@@ -207,19 +207,6 @@ function isGameOver() {
     return gameOver
 }
 
-function displayAttack(board, square) {
-    const index = square.id
-    board.receiveAttack(index)
-    const attackedCell = board.board[index]
-    if (attackedCell.hit === true) {
-        square.classList.add('hit')
-    } else if (attackedCell.missedAttack === true) {
-        square.classList.add('missed-Attack')
-    } else {
-        return
-    } 
-}
-
 function startGame() {
     if (shipsDom.length !== 0) return
     shipsComp.forEach(ship => placeComputerShip(ship))
@@ -242,6 +229,23 @@ function displayWinner() {
     })
 }
 
+function displayAttack(board, square) {
+    const index = square.id
+    let success = false
+    const successAttack = board.receiveAttack(index)
+    const attackedCell = board.board[index]
+    if (successAttack){
+        if (attackedCell.hit === true) {
+            square.classList.add('hit')
+            success = true
+        } else if (attackedCell.missedAttack === true) {
+            square.classList.add('missed-Attack')
+            success = true
+        }
+    } 
+    return success
+}
+
 //play the game until either player or the computer loses
 function gameControler() {
     let computerTurn = false
@@ -249,27 +253,28 @@ function gameControler() {
     computerSquares.forEach(square => {
         square.addEventListener('click', () => {
             if (!isGameOver().done) {
-                displayAttack(ComputerBoard, square)
+                    const successAttack = displayAttack(ComputerBoard, square)
                 if (isGameOver().done) {
                     displayWinner()
                 } else {
-                    computerTurn = true
-                    const randomSquare = playerSquaresArray.shift()
-                    randomSquare.click()
-                    computerTurn = false
+                    if (successAttack) {
+                        computerTurn = true
+                        const randomSquare = playerSquaresArray.shift()
+                        randomSquare.click()
+                        computerTurn = false
+                    }
                 }
             } else return
         })
     })
     playerSquares.forEach(square => {
         square.addEventListener('click', () => {
-            if (computerTurn) {
-                if (!isGameOver().done) {
-                    displayAttack(PlayerBoard, square)
-                } else if (isGameOver().done) {
-                    displayWinner()
-                } else return
+            if (!isGameOver().done) {
+                displayAttack(PlayerBoard, square)
+            if (isGameOver().done) {
+                displayWinner()
             } else return
+        } else return
         })   
     })
 }

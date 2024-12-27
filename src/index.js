@@ -1,6 +1,5 @@
 import Ship from '../src/ship'
 import Gameboard from '../src/gameboard'
-import Player from '../src/player'
 
 //create the ships objects for human player
 let aircraft = new Ship(0, 5)
@@ -17,18 +16,14 @@ let destroyerComp = new Ship(3, 3)
 let cruiserComp = new Ship(4, 2)
 
 //add all the ships to the queue
-let shipsComp = [aircraftComp, battleshipComp, submarineComp, destroyerComp, cruiserComp]
 let ships = [aircraft, battleship, submarine, destroyer, cruiser]
+let shipsComp = [aircraftComp, battleshipComp, submarineComp, destroyerComp, cruiserComp]
 
 //create the player board and the computer board objects
 let PlayerBoard = new Gameboard(ships)
 PlayerBoard.createGameBoard()
 let ComputerBoard = new Gameboard(shipsComp)
 ComputerBoard.createGameBoard()
-
-//create the player and the computer player objects
-let player = new Player(PlayerBoard)
-let computer = new Player(ComputerBoard)
 
 const header = document.querySelector('.header')
 const main = document.querySelector('.main')
@@ -90,6 +85,7 @@ function initGame() {
     main.classList.add('blur')
 }
 
+//initialise the game
 initGame()
 
 function isValidShipPlace(board, ship, startIndex) {
@@ -246,8 +242,9 @@ function displayWinner() {
     })
 }
 
-//play the game until either player loses
+//play the game until either player or the computer loses
 function gameControler() {
+    let computerTurn = false
     const playerSquaresArray = shuffleSquares([...playerSquares])
     computerSquares.forEach(square => {
         square.addEventListener('click', () => {
@@ -256,20 +253,23 @@ function gameControler() {
                 if (isGameOver().done) {
                     displayWinner()
                 } else {
+                    computerTurn = true
                     const randomSquare = playerSquaresArray.shift()
                     randomSquare.click()
+                    computerTurn = false
                 }
             } else return
         })
     })
     playerSquares.forEach(square => {
         square.addEventListener('click', () => {
-            if (!isGameOver().done) {
-                displayAttack(PlayerBoard, square)
-                if (isGameOver().done) {
+            if (computerTurn) {
+                if (!isGameOver().done) {
+                    displayAttack(PlayerBoard, square)
+                } else if (isGameOver().done) {
                     displayWinner()
-                }
+                } else return
             } else return
-        })
+        })   
     })
 }

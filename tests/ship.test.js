@@ -1,7 +1,6 @@
 import Ship from '../src/ship'
 
 const aircraft = new Ship(0, 5)
-
 it ('ship id', () => {
     expect(aircraft.id).toBe(0)
 })
